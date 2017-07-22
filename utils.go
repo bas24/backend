@@ -41,8 +41,7 @@ func rQ(s string) string {
 }
 func rU(s string) string {
 	replaced := strings.Replace(s, `\n\thttp`, `http`, -1)
-	u, err := url.Parse(replaced)
-	check(err)
+	u, _ := url.Parse(replaced)
 	result := strings.Replace(replaced, u.RawQuery, ``, -1)
 	return result
 }

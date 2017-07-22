@@ -1,4 +1,4 @@
-package main
+\package main
 
 import (
 	"github.com/bas24/newsapi"
@@ -27,20 +27,24 @@ func newsapiFetch() ([]ArticleObj, error) {
 		return true
 	}
 	for _, r := range result {
-		for j, art := range r.Articles {
+		for _, art := range r.Articles {
 			if isValid(art) {
-				image := func() {
 
+				images, err := getImagesInBytes(art.UrlToImage)
+				if err != nil {
+					// TODO log error if any
+					continue
 				}
-				// clue Response.Articles[].Articles[].art to ArticleObj
+
+				// clue Response.Articles[].art to ArticleObj
 				a := ArticleObj{
 					Id:              int64(0), // db will set on insert
 					Source:          r.Source,
 					Topic:           newsapi.GetTopic(r.Source),
 					Url:             art.Url,
 					UrlToImage:      art.UrlToImage,
-					ImageBytes200:   []byte{}, // TODO func to fetch, resize and encode image
-					ImageBytes600:   []byte{},
+					ImageBytes200:   images[200],
+					ImageBytes600:   images[600],
 					PublishedAt:     parsePublishedAt(art.PublishedAt),
 					TitleORIG:       art.Title,
 					TitleES:         "",
@@ -70,6 +74,7 @@ func newsapiFetch() ([]ArticleObj, error) {
 					StatusIT:        0,
 					StatusPT:        0,
 				}
+				articles = append(articles, a)
 			}
 		}
 	}
